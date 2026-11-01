@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Undian Bantuan Singapore</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+ margin:0;
+ font-family:Arial,sans-serif;
+ background:linear-gradient(145deg,#061426,#102b48,#061426);
+ color:#fff;
+ min-height:100vh;
+}
+
+header{
+ text-align:center;
+ padding:35px 15px 25px;
+ border-bottom:1px solid #b89545;
+}
+
+.logo{
+ width:65px;
+ height:65px;
+ border:2px solid #d9b65c;
+ border-radius:50%;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ margin:auto;
+ color:#e7c66c;
+ font-size:28px;
+}
+
+header h1{
+ color:#e7c66c;
+ font-size:23px;
+ letter-spacing:2px;
+ margin:15px 0 8px;
+}
+
+header p{color:#c5d0dd;font-size:13px}
+
+.demo{
+ background:#382e16;
+ color:#f4d77d;
+ text-align:center;
+ padding:11px;
+ font-size:12px;
+ font-weight:bold;
+ letter-spacing:1px;
+}
+
+.container{
+ max-width:480px;
+ margin:auto;
+ padding:18px 14px;
+}
+
+.card{
+ background:linear-gradient(145deg,#183653,#10263e);
+ border:1px solid #94783c;
+ border-radius:16px;
+ padding:21px;
+ margin-bottom:18px;
+ box-shadow:0 8px 25px #0005;
+}
+
+h3{
+ color:#e7c66c;
+ margin-top:0;
+}
+
+p{line-height:1.6;color:#d2dce7}
+
+input,textarea{
+ width:100%;
+ padding:14px;
+ margin:7px 0;
+ border:1px solid #a58b4d;
+ background:#091b2e;
+ color:white;
+ border-radius:8px;
+ font-size:15px;
+}
+
+button{
+ width:100%;
+ padding:14px;
+ border:none;
+ border-radius:8px;
+ background:linear-gradient(100deg,#b18a37,#f3d783);
+ color:#17263b;
+ font-weight:bold;
+ font-size:15px;
+ margin-top:10px;
+ cursor:pointer;
+}
+
+button:disabled{
+ opacity:.5;
+ cursor:not-allowed;
+}
+
+.withdraw{
+ background:linear-gradient(100deg,#b18a37,#f3d783);
+}
+
+.result{
+ display:none;
+ text-align:center;
+ padding:20px 12px;
+ background:#091b2e;
+ border:1px solid #c6a653;
+ border-radius:12px;
+ margin-top:18px;
+}
+
+.result h2{
+ color:#f1d47b;
+ overflow-wrap:anywhere;
+}
+
+.amount{
+ color:#f1d47b;
+ font-size:28px;
+ font-weight:bold;
+ margin:18px 0;
+}
+
+.status{
+ display:inline-block;
+ background:#263b4e;
+ color:#f1d47b;
+ padding:7px 13px;
+ border-radius:20px;
+ font-size:11px;
+}
+
+.notice{
+ display:none;
+ margin-top:15px;
+ padding:14px;
+ border:1px solid #d2ad53;
+ border-radius:9px;
+ background:#302918;
+ color:#f4dda0;
+ font-size:13px;
+}
+
+li{
+ padding:7px 0;
+ border-bottom:1px solid #ffffff15;
+}
+
+footer{
+ text-align:center;
+ color:#9daebe;
+ padding:25px;
+ font-size:12px;
+}
+
+@keyframes reveal{
+ from{opacity:0;transform:scale(.85)}
+ to{opacity:1;transform:scale(1)}
+}
+
+.show{animation:reveal .5s ease}
+</style>
+</head>
+
+<body>
+
+<header>
+ <div class="logo">★</div>
+ <h1>RIZKY PRATAMA DION</h1>
+ <p>PORTAL UNDIAN BANTUAN HIBAH SINGAPORE</p>
+</header>
+
+<div class="demo">
+SYSTEM UNDIAN BANTUAN HIBAH SINGAPORE
+</div>
+
+<div class="container">
+
+ <div class="card">
+  <h3>USERNAME PENERIMA</h3>
+  <p>Masukkan nama penerima. Satu nama untuk setiap baris.</p>
+
+  <textarea id="names" rows="5"
+  placeholder="Nama peserta 1&#10;Nama penerima 2&#10;Nama penerima 3"></textarea>
+
+  <button onclick="saveNames()">SIMPAN DAFTAR PENERIMA</button>
+
+  <p id="count">Jumlah peserta: 0</p>
+ </div>
+
+ <div class="card">
+  <h3>✦ UNDIAN PENERIMA</h3>
+  <p>Tekan tombol di bawah untuk menjalankan undian acak .</p>
+
+  <button id="drawBtn" onclick="drawWinner()">
+   ★ MULAI UNDIAN ★
+  </button>
+
+  <div class="result" id="result">
+   <div class="status">HASIL </div>
+
+   <p>Nama terpilih:</p>
+   <h2 id="winner"></h2>
+
+   <p>Nominal hadiah :</p>
+   <div class="amount" id="amount"></div>
+
+   <p>STATUS: Active</p>
+
+   <button class="withdraw" onclick="withdrawDemo()">
+    WITHDRAW 
+   </button>
+
+   <div class="notice" id="notice">
+    <b>PERMINTAAN  DICATAT</b>
+    <p>Harap konfirmasi kepada admin untuk informasi,Silahkan Screnshot lalu Kirim ke admin,admin mengarahkan ke system BANK INTERNATIOANAL untuk melakukan witdhraw ke rekening anda</p>
+   </div>
+  </div>
+ </div>
+
+ <div class="card">
+  <h3>✦ DAFTAR PESERTA</h3>
+  <ol id="participants">
+   <li>Belum ada peserta</li>
+  </ol>
+ </div>
+
+</div>
+
+<footer>
+ RIZKY PRATAMA DION<br>
+ PORTAL UNDIAN BANTUAN<br>
+ © 2026
+</footer>
+
+<script>
+let peserta=[];
+let pemenang=null;
+
+function saveNames(){
+ const input=document.getElementById("names").value;
+
+ peserta=[...new Set(
+  input.split("\n")
+  .map(n=>n.trim())
+  .filter(n=>n.length>0)
+ )];
+
+ document.getElementById("count").innerText=
+ "Jumlah peserta: "+peserta.length;
+
+ const list=document.getElementById("participants");
+ list.innerHTML="";
+
+ peserta.forEach(n=>{
+  const li=document.createElement("li");
+  li.textContent=n;
+  list.appendChild(li);
+ });
+
+ pemenang=null;
+
+ document.getElementById("result").style.display="none";
+ document.getElementById("drawBtn").disabled=false;
+
+ alert("Daftar penerima berhasil disimpan.");
+}
+
+function drawWinner(){
+ if(peserta.length===0){
+  alert("Masukkan penerima terlebih dahulu!");
+  return;
+ }
+
+ if(pemenang!==null){
+  alert("Undian sudah dilakukan. Simpan daftar baru untuk mengulang.");
+  return;
+ }
+
+ const index=Math.floor(Math.random()*peserta.length);
+ pemenang=peserta[index];
+
+ const nilai=Math.floor(Math.random()*(100000-30000+1))+30000;
+
+ document.getElementById("winner").textContent=pemenang;
+ document.getElementById("amount").textContent=
+ "SGD "+nilai.toLocaleString("en-SG");
+
+ const result=document.getElementById("result");
+ result.style.display="block";
+ result.classList.remove("show");
+ void result.offsetWidth;
+ result.classList.add("show");
+
+ document.getElementById("drawBtn").disabled=true;
+}
+
+function withdrawDemo(){
+ if(!pemenang)return;
+
+ document.getElementById("notice").style.display="block";
+}
+</script>
+
+</body>
+</html>
